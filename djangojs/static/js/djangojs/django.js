@@ -1,6 +1,13 @@
-(function($){
+define([
+	'jquery'
+], function ($) {
 
     "use strict";
+
+	if (typeof window === 'undefined') {
+		// this is node.js environment
+		var window = global;
+	}
 
     function DjangoJsError(message) {
         this.name = "DjangoJsError";
@@ -242,4 +249,4 @@
 
     return Django;
 
-}(window.jQuery));
+});

@@ -71,6 +71,18 @@ class JsInitView(UserCacheMixin, TemplateView):
         response_kwargs['content_type'] = JAVASCRIPT_MIMETYPE
         return super(JsInitView, self).render_to_response(context, **response_kwargs)
 
+    # eugene aded
+    def get_string(self, request, **kwargs):
+        from django.template.loader import render_to_string
+        context = self.get_context_data(**kwargs)
+        return render_to_string(self.template_name, context)
+
+    def dispatch(self, request, *args, **kwargs):
+        if 'as_string' in kwargs:
+            return self.get_string(request)
+        return super(JsInitView, self).dispatch(request, *args, **kwargs)
+    # eugene aded
+
 
 class JsonView(View):
     '''
