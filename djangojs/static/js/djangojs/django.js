@@ -6,7 +6,7 @@ define([
 
 	if (typeof window === 'undefined') {
 		// this is node.js environment
-		var window = global;
+		var window = global.window;
 	}
 
     function DjangoJsError(message) {
