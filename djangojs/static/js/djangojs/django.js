@@ -4,9 +4,9 @@ define([
 
     "use strict";
 
-	if (typeof window === 'undefined') {
+	if (typeof is_server !== "undefined") {
 		// this is node.js environment
-		var window = global.window;
+		window = global.window;
 	}
 
     function DjangoJsError(message) {
@@ -16,7 +16,7 @@ define([
     DjangoJsError.prototype = new Error();
     DjangoJsError.prototype.constructor = DjangoJsError;
 
-    var Django = window.Django = {
+    var Django = {
 
         token_regex: /<\w*>/g,
         named_token_regex: /<(\w+)>/g,
