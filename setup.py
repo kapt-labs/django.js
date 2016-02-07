@@ -44,11 +44,11 @@ if sys.version_info[0:2] < (2, 7):
 
 setup(
     name='django.js',
-    # version=__import__('djangojs').__version__,
+    version=__import__('djangojs').__version__,
     description=__import__('djangojs').__description__,
     long_description=long_description,
-    url='https://github.com/noirbizarre/django.js',
-    download_url='http://pypi.python.org/pypi/django.js',
+    # url='https://github.com/noirbizarre/django.js',
+    # download_url='http://pypi.python.org/pypi/django.js',
     author='Axel Haustant',
     author_email='noirbizarre+django@gmail.com',
     packages=find_packages(),
