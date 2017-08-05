@@ -96,6 +96,13 @@ define([
             return url;
         },
 
+      reactUrl: function(name, args) {
+        var url = this.url(name, args)
+        url = url.replace(/\/</g, '/:')
+        url = url.replace(/>\//g, '/')
+        return url;
+      },
+
         _url_from_array: function(name, pattern, array) {
             var matches = pattern.match(this.token_regex),
                 parts = pattern.split(this.token_regex),
