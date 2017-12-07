@@ -22,7 +22,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         from djangojs.views import JsInitView
 
-        import pdb; pdb.set_trace()
         location = self.get_location()
         file = 'init.js'
         fs = FileSystemStorage(location=location)
