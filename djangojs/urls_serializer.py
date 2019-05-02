@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 import json
 import logging
@@ -8,7 +8,18 @@ import sys
 import types
 
 from django.core.serializers.json import DjangoJSONEncoder
-from django.core.urlresolvers import RegexURLPattern, RegexURLResolver, get_script_prefix
+# from django.core.urlresolvers import RegexURLPattern, RegexURLResolver, get_script_prefix
+try:
+    from django.urls import (
+        NoReverseMatch, URLPattern as RegexURLPattern, URLResolver as RegexURLResolver, ResolverMatch, Resolver404, get_script_prefix, reverse, reverse_lazy, resolve
+    )
+
+except ImportError:
+    from django.core.urlresolvers import (  # Will be removed in Django 2.0
+        NoReverseMatch, RegexURLPattern, RegexURLResolver, ResolverMatch, Resolver404, get_script_prefix, reverse, reverse_lazy, resolve
+    )
+
+
 from django.utils import six
 
 from djangojs.conf import settings
@@ -50,6 +61,16 @@ def urls_as_json():
     return json.dumps(urls_as_dict(), cls=DjangoJSONEncoder)
 
 
+def get_regex(resolver_or_pattern):
+    """Utility method for django's deprecated resolver.regex"""
+    try:
+        regex = resolver_or_pattern.regex
+    except AttributeError:
+        regex = resolver_or_pattern.pattern.regex
+    return regex
+
+
+
 def _get_urls_for_pattern(pattern, prefix='', namespace=None):
     urls = {}
 
@@ -76,7 +97,8 @@ def _get_urls_for_pattern(pattern, prefix='', namespace=None):
                 return {}
             if namespace:
                 pattern_name = ':'.join((namespace, pattern_name))
-            full_url = prefix + pattern.regex.pattern
+            # full_url = prefix + pattern.regex.pattern
+            full_url = prefix + get_regex(pattern).pattern
             for char in ['^', '$']:
                 full_url = full_url.replace(char, '')
             # remove optionnal non capturing groups
@@ -121,7 +143,8 @@ def _get_urls_for_pattern(pattern, prefix='', namespace=None):
                     continue
                 if settings.JS_URLS_NAMESPACES_EXCLUDE and namespaces in settings.JS_URLS_NAMESPACES_EXCLUDE:
                     continue
-                new_prefix = '%s%s' % (prefix, pattern.regex.pattern)
+                # new_prefix = '%s%s' % (prefix, pattern.regex.pattern)
+                new_prefix = '%s%s' % (prefix, get_regex(pattern).pattern)
                 urls.update(_get_urls(pattern.urlconf_name, new_prefix, namespaces))
 
     return urls
