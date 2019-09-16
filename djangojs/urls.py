@@ -7,7 +7,7 @@ from django.conf.urls import url
 
 from djangojs.conf import settings
 from djangojs.views import UrlsJsonView, ContextJsonView, JsInitView
-from django.views.i18n import javascript_catalog
+# from django.views.i18n import JavascriptCatalog
 
 def js_info_dict():
     js_info_dict = {
@@ -33,5 +33,5 @@ urlpatterns = [
     url(r'^init\.js$', JsInitView.as_view(), name='django_js_init'),
     url(r'^urls$', UrlsJsonView.as_view(), name='django_js_urls'),
     url(r'^context$', ContextJsonView.as_view(), name='django_js_context'),
-    url(r'^translation$', javascript_catalog, js_info_dict(), name='js_catalog'),
+    # url(r'^translation$', JavascriptCatalog.as_view(), js_info_dict(), name='js_catalog'),
 ]
