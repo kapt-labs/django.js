@@ -104,7 +104,8 @@ var Django = {
 
   reactUrl: function(name, args) {
     var url = this.url(name, args)
-    url = url.replace(/\/</g, '/:')
+    // <pk> or <int:pk>
+    url = url.replace(/\/<(?:.*:\/)?/g, '/:')
     url = url.replace(/>\//g, '/')
     return url;
   },
