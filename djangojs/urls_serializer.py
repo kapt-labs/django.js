@@ -46,19 +46,27 @@ except:
     CMS_APP_RESOLVER = False  # we can live without it
 
 
-def urls_as_dict():
+def urls_as_dict(**kwargs):
     '''
     Get the URLs mapping as a dictionnary
     '''
     module = settings.ROOT_URLCONF
-    return _get_urls(module) if settings.JS_URLS_ENABLED else {}
+    return _get_urls(module, **kwargs) if settings.JS_URLS_ENABLED else {}
 
 
-def urls_as_json():
+def urls_as_json(**kwargs):
     '''
     Get the URLs mapping as JSON
     '''
-    return json.dumps(urls_as_dict(), cls=DjangoJSONEncoder)
+    urls = urls_as_dict(**kwargs)
+    # urls = {
+    #     k: v
+    #     for k, v
+    #     in urls_all.items()
+    #     if 'admin' not in k.split(":")[0]
+    # }
+
+    return json.dumps(urls, cls=DjangoJSONEncoder)
 
 
 def get_regex(resolver_or_pattern):
@@ -71,8 +79,9 @@ def get_regex(resolver_or_pattern):
 
 
 
-def _get_urls_for_pattern(pattern, prefix='', namespace=None):
+def _get_urls_for_pattern(pattern, prefix='', namespace=None, **kwargs):
     urls = {}
+    service_name = kwargs.get('service_name', 'default')
 
     if prefix is '':
         prefix = get_script_prefix()
@@ -139,19 +148,24 @@ def _get_urls_for_pattern(pattern, prefix='', namespace=None):
             for ns in nss:
                 namespaces = [nsp for nsp in (namespace, ns) if nsp]
                 namespaces = ':'.join(namespaces)
-                if settings.JS_URLS_NAMESPACES and namespaces and namespaces not in settings.JS_URLS_NAMESPACES:
+
+                JS_URLS_NAMESPACES = settings.DJANGOJS.get(service_name).get('JS_URLS_NAMESPACES')
+                JS_URLS_NAMESPACES_EXCLUDE = settings.DJANGOJS.get(service_name).get('JS_URLS_NAMESPACES_EXCLUDE')
+
+                if JS_URLS_NAMESPACES and namespaces and namespaces not in JS_URLS_NAMESPACES:
                     continue
-                if settings.JS_URLS_NAMESPACES_EXCLUDE and namespaces in settings.JS_URLS_NAMESPACES_EXCLUDE:
+                if JS_URLS_NAMESPACES_EXCLUDE and namespaces in JS_URLS_NAMESPACES_EXCLUDE:
                     continue
                 # new_prefix = '%s%s' % (prefix, pattern.regex.pattern)
                 new_prefix = '%s%s' % (prefix, get_regex(pattern).pattern)
-                urls.update(_get_urls(pattern.urlconf_name, new_prefix, namespaces))
+                urls.update(_get_urls(pattern.urlconf_name, new_prefix, namespaces, **kwargs))
 
     return urls
 
 
-def _get_urls(module, prefix='', namespace=None):
+def _get_urls(module, prefix='', namespace=None, **kwargs):
     urls = {}
+
     if isinstance(module, (six.text_type, six.string_types)):
         try:
             __import__(module)
@@ -167,6 +181,6 @@ def _get_urls(module, prefix='', namespace=None):
         raise TypeError('Unsupported type: %s' % type(module))
 
     for pattern in patterns:
-        urls.update(_get_urls_for_pattern(pattern, prefix=prefix, namespace=namespace))
+        urls.update(_get_urls_for_pattern(pattern, prefix=prefix, namespace=namespace, **kwargs))
 
     return urls

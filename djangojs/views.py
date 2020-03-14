@@ -60,10 +60,11 @@ class JsInitView(UserCacheMixin, TemplateView):
     Render a javascript file containing the URLs mapping and the context as JSON.
     '''
     template_name = 'djangojs/init.js'
+    service_name = 'default'
 
     def get_context_data(self, **kwargs):
         context = super(JsInitView, self).get_context_data(**kwargs)
-        context['urls'] = urls_as_json()
+        context['urls'] = urls_as_json(service_name=self.service_name)
         serializer = class_from_string(settings.JS_CONTEXT_PROCESSOR)
         context['context'] = serializer(self.request).as_json()
         return context
