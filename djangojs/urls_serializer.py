@@ -152,9 +152,9 @@ def _get_urls_for_pattern(pattern, prefix='', namespace=None, **kwargs):
                 JS_URLS_NAMESPACES = settings.DJANGOJS.get(service_name).get('JS_URLS_NAMESPACES')
                 JS_URLS_NAMESPACES_EXCLUDE = settings.DJANGOJS.get(service_name).get('JS_URLS_NAMESPACES_EXCLUDE')
 
-                if JS_URLS_NAMESPACES and namespaces and namespaces not in JS_URLS_NAMESPACES:
+                if JS_URLS_NAMESPACES and namespaces and not namespaces.startswith(tuple(JS_URLS_NAMESPACES)):
                     continue
-                if JS_URLS_NAMESPACES_EXCLUDE and namespaces in JS_URLS_NAMESPACES_EXCLUDE:
+                if JS_URLS_NAMESPACES_EXCLUDE and namespaces and namespaces.startswith(tuple(JS_URLS_NAMESPACES_EXCLUDE)):
                     continue
                 # new_prefix = '%s%s' % (prefix, pattern.regex.pattern)
                 new_prefix = '%s%s' % (prefix, get_regex(pattern).pattern)
